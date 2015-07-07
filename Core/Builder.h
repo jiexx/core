@@ -9,9 +9,11 @@ class Builder
 public:
 	Builder(void);
 	~Builder(void);
-	RESULT parse( Node* c );
+	Node* split(const char* text);
+	RESULT read( Node* c );
 protected:
 	Node* root;
+	stack<Node*> node_stack;
 };
 
 #endif
