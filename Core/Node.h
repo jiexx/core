@@ -1,16 +1,33 @@
 #ifndef __NODE_H__
 #define __NODE_H__
 
-#pragma once
+#include "StableHeader.h"
+
 class Node
 {
 public:
 	Node(void);
 	~Node(void);
 	Node* left();
-	Node* findMostRight(const Operator* op);// 1->2->1->2->1, if 2, inserted is 1->2->2, insert (1->2->1) into 1->2 right; if 1, inserted is 1->1->2, insert (1->2->1) into 1->1 right
-	virtual void addLeft(Node* n);
-	virtual void addRight(Node* n); 
+	Node* right();
+	Node* farRight();
+	/*
+	 *       1      +     3      ->            1                        1         +      1/0          ->  1/0
+	 *      / \                               / \                      / \                               / \
+	 *         2                                 2                        2                             1   
+	 *        / \                               / \                      / \                           / \     
+	 *           1                                 3                        1                             2
+	 *          / \                               /                        / \                           / \
+	 *             2                             1                            2                             1
+	 *            / \                           / \                          / \                           / \ 
+	 *                                             2                                                          2
+	 *                                            / \                                                        / \
+	 *1->2->1->2->1, if 3, inserted is 1->2->3, insert (1->2->1) into 1->2->3 left; if 1, inserted is 1->1->2, insert (1->2->1) into 1 left
+	 */
+	Node* findMostRight(const Operator* op);
+	virtual string name();
+	void addLeft(Node* n);
+	void addRight(Node* n); 
 };
 
 #endif

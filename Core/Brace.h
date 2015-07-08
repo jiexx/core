@@ -1,7 +1,7 @@
 #ifndef __BRACE_H__
 #define __BRACE_H__
 
-#pragma once
+
 class Brace : public Node
 {
 public:
