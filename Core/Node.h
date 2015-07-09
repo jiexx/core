@@ -25,7 +25,10 @@ public:
 	 *1->2->1->2->1, if 3, inserted is 1->2->3, insert (1->2->1) into 1->2->3 left; if 1, inserted is 1->1->2, insert (1->2->1) into 1 left
 	 */
 	Node* findMostRight(const Operator* op);
-	virtual string name();
+	virtual const char* name();
+	virtual const char* serialize();
+	virtual void unserialize(const char* buf);
+
 	void addLeft(Node* n);
 	void addRight(Node* n); 
 };

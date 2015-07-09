@@ -10,6 +10,17 @@ Builder::~Builder(void)
 {
 }
 
+RESULT Builder::build(const char* context, const char* ops, const char* braces, const char* blanks )
+{
+	if( table_ops.load(ops) && table_braces.load(braces) && table_blanks.load(blanks) ) {
+		NodeManager* mgr = NodeManager::getSingleton();
+		if( mgr->getHeader() ) {
+			return read( mgr->getHeader() );
+		}
+	}
+	return E_BUILD_CONFIG;
+}
+
 RESULT Builder::read( Node* c )
 {
 	while( c++ ) {
@@ -74,24 +85,40 @@ RESULT Builder::read( Node* c )
 	}
 }
 
-bool Builder::match( const char* p )
+int Builder::isOp( const char* p )
 {
-	int i;
-	for( i = 0 ; i < table_op.count() ; i ++ ) {
-		if( strcmp(p, table_op.get(i)) )
-			break;
-	}
-	if( i < table_op.count() )
-		return true;
-	return false;
+	return table_ops.has(p);
 }
 
-RESULT Builder::parse( const char* content )
+int Builder::isBlank(const char* p)
 {
-	const char* p;
+	return table_blanks.has(p);
+}
+
+int Builder::isBrace(const char* p)
+{
+	return table_braces.has(p);
+}
+
+void Builder::parse( const char* content )
+{
+	NodeManager* mgr = NodeManager::getSingleton();
+	const char* last = content;
+	int width;
 	while( *content ) {
-		if( match( content ) )
-		
+		if( (width = isBlank(content)) > 0 ) {
+			content += width;
+		}else if( (width = isOp( content )) > 0 ) {
+			mgr->createOperator(content, width);
+			mgr->createOperand(content, content-last);
+			last = content;
+			content += width;
+		}else if( (width = isBrace( content )) > 0 ) {
+			mgr->createBrace(content, width);
+			last = content;
+			content += width;
+		}
+		content ++;
 	}
 }
 
@@ -114,7 +141,7 @@ void Builder::print( Node* root, int* level )
 	}
 	for( int i = 0 ; i < 2*(*level) ; i ++ )
 		printf(" ");
-	printf(root->name().c_str());
+	printf(root->name());
 	printf("\n");
 	if( root->left() ) {
 		for( int i = 0 ; i < (*level) ; i ++ )
@@ -126,4 +153,63 @@ void Builder::print( Node* root, int* level )
 			printf(" ");
 		printf("\\");
 	}
+}
+
+void Builder::serialize(char* file)
+{
+
+}
+void Builder::unserialize(const char* file)
+{
+}
+
+void Builder::brand(Node* node, char** file)
+{
+	int len = 0;
+	if( node ) {
+		const char* buf = node->serialize();
+		len = strlen( buf );
+		memcpy( *file, buf, len );
+	}
+	memcpy( *file, Config::delimiter().c_stc(), Config::delimiter().length());
+	*file += len + Config::delimiter().length();
+}
+ 
+void Builder::pack(Node* root, char* file)
+{
+	brand( root, &file );
+
+	if( root->left() ) {
+		pack( root->left(), file );
+	}
+	brand( root->left(), &file );
+
+	if( root->right() ) {
+		pack( root->right(), file );
+	}
+	brand( root->right(), &file );
+}
+void Builder::unpack(Node* root, const char* file)
+{
+	NodeManager* mgr = NodeManager::getSingleton();
+	vector<Node*> nodes;
+	const char* last = file;
+	int width;
+	while( file ) {
+		if( (width = Config::hasDelimiter( file )) > 0 ) {
+			nodes.push_back( mgr->unserialize( file, file - last ) );
+			last = file;
+			file += width;
+		}
+		file ++;
+	}
+	Node* node;
+	for( int i = 0 ; i < nodes.size() ; i ++ ) {
+		node = nodes.at(i);
+		if( node ) {
+			node->addLeft( nodes.at(2*i) );
+			node->addRight( nodes.at(2*i+1) );
+		}
+	}
+	root = nodes.at(0);
 }
