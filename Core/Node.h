@@ -29,6 +29,7 @@ public:
 	virtual const char* serialize();
 	virtual void unserialize(const char* buf);
 
+	Node* find( const char* name);
 	void addLeft(Node* n);
 	void addRight(Node* n); 
 };

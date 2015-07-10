@@ -8,8 +8,9 @@ class Config
 public:
 	Config(void);
 	~Config(void);
-	const static string delimiter();
+	static const string delimiter();
 	static int hasDelimiter(const char* str);
+	static const string name();
 };
 
 #endif

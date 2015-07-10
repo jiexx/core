@@ -157,39 +157,10 @@ void Builder::print( Node* root, int* level )
 
 void Builder::serialize(char* file)
 {
-
+	if( root )
+		pack( root, file );
 }
 void Builder::unserialize(const char* file)
-{
-}
-
-void Builder::brand(Node* node, char** file)
-{
-	int len = 0;
-	if( node ) {
-		const char* buf = node->serialize();
-		len = strlen( buf );
-		memcpy( *file, buf, len );
-	}
-	memcpy( *file, Config::delimiter().c_stc(), Config::delimiter().length());
-	*file += len + Config::delimiter().length();
-}
- 
-void Builder::pack(Node* root, char* file)
-{
-	brand( root, &file );
-
-	if( root->left() ) {
-		pack( root->left(), file );
-	}
-	brand( root->left(), &file );
-
-	if( root->right() ) {
-		pack( root->right(), file );
-	}
-	brand( root->right(), &file );
-}
-void Builder::unpack(Node* root, const char* file)
 {
 	NodeManager* mgr = NodeManager::getSingleton();
 	vector<Node*> nodes;
@@ -212,4 +183,31 @@ void Builder::unpack(Node* root, const char* file)
 		}
 	}
 	root = nodes.at(0);
+}
+
+void Builder::brand(Node* node, char** file)
+{
+	int len = 0;
+	if( node ) {
+		const char* buf = node->serialize();
+		len = strlen( buf );
+		memcpy( *file, buf, len );
+	}
+	memcpy( *file, Config::delimiter().c_stc(), Config::delimiter().length());
+	*file += len + Config::delimiter().length();
+}
+ 
+void Builder::pack(Node* node, char* file)
+{
+	brand( node, &file );
+
+	if( node->left() ) {
+		pack( node->left(), file );
+	}
+	brand( node->left(), &file );
+
+	if( node->right() ) {
+		pack( node->right(), file );
+	}
+	brand( node->right(), &file );
 }

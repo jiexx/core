@@ -2,6 +2,7 @@
 #define __STABLEHEADER_H__
 
 #include "StdAfx.h"
+#include "Node.h"
 #include "Builder.h"
 #include "Operator.h"
 #include "Brace.h"
@@ -24,7 +25,7 @@ enum RESULT {
 	E_BUILD_OPERATOR_FISRT		= (ERROR+2),
 	E_BUILD_BRACE_ABSENT		= (ERROR+3),
 	E_BUILD_BRACE_OPERAND_JOIN	= (ERROR+4),
-	E_BUILD_CONFIG				= (ERROR+1),
+	E_BUILD_CONFIG				= (ERROR+5),
 };
 
 #endif

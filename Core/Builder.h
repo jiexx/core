@@ -24,8 +24,7 @@ protected:
 		int has(const char* p );
 		const char* get(int index);
 	};
-	void pack(Node* root, char* file);
-	void unpack(Node* root, const char* file);
+	void pack(Node* node, char* file);
 	void brand(Node* node, char** file);
 	void print(Node* root, int* level);
 	int isOp(const char* p);
